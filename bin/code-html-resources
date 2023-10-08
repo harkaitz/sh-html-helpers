@@ -1,0 +1,23 @@
+#!/bin/sh -e
+##:
+#h: Usage: code-html-resources HTML...
+#h:
+#h: Print <script> and <link> sources.
+#x:
+#x: Dependencies: code-html-resources
+##:
+code_html_resources() {
+    local f=''
+    for f in "$@"; do
+        html2 < "${f}" 2>/dev/null | sed -n "
+        s|.*/script/@src=||p
+        s|.*/link/@href=||p
+        "
+    done | sort -u
+}
+if test @"$(basename "$0")" = @"code-html-resources";then
+    case "${1}" in
+        ''|-h|--help) sed -n 's/^ *#h: \{0,1\}//p' "$0" ;;
+        *)            code_html_resources "$@"; exit 0  ;;
+    esac
+fi
